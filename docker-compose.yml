@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+    postgresdb:
+        env_file:
+            - ./.env3
+        image: postgres:latest
+        volumes:
+            - db-data:/home/dortt/postgresdb/data
+        networks:
+            - dortt-network
+        container_name: "postgresdb"
+        restart: "always"
+        ports:
+            - "5432:5432"
+        environment:
+            - POSTGRES_USER=${PG_USER}
+            - POSTGRES_PASSWORD=${PG_PASS}
+            - POSTGRES_DB=${PG_DB}
+    dortt-server:
+        build: .
+        env_file:
+            - ./.env3
+        image: dortt-server
+        volumes:
+            - server-data:/home/dortt/server
+            - node_modules:/home/dortt/server/node_modules
+        environment:
+            - POSTGRES_URL=postgresdb
+        networks:
+            - dortt-network
+        depends_on:
+            - postgresdb
+        container_name: "dortt-server"
+        command: yarn dev
+        ports:
+            - "3001:3001"
+        deploy:
+            update_config:
+                parallelism: 2
+            restart_policy:
+                condition: on-failure
+networks:
+    dortt-network:
+volumes: 
+    node_modules:
+    server-data:
+    db-data:
