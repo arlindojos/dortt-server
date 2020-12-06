@@ -1,12 +1,8 @@
 import nodemailer from 'nodemailer';
-import { config } from 'dotenv';
-
-config({ path: '.env3' })
-
 
 let transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
+    host: 'email-smtp.us-east-2.amazonaws.com',
+    port: 587,
     secure: false, 
     auth: {
         user: process.env.SMTP_USER,
